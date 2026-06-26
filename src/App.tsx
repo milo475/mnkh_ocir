@@ -28,23 +28,6 @@ function useInView() {
   return { ref, visible };
 }
 
-function useCounter(end: number, duration = 1500, start = false) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!start) return;
-    let frame: number;
-    const startTime = performance.now();
-    const step = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      setCount(Math.floor(progress * end));
-      if (progress < 1) frame = requestAnimationFrame(step);
-    };
-    frame = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(frame);
-  }, [start, end, duration]);
-  return count;
-}
-
 export default function App() {
   const [page, setPage] = useState<"home" | "about" | "projects" | "contact">("home");
   const [menuOpen, setMenuOpen] = useState(false);
