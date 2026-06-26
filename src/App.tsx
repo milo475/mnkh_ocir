@@ -52,11 +52,6 @@ export default function App() {
   const skills = useInView();
   const featured = useInView();
   const cta = useInView();
-  const counters = useInView();
-
-  const projectCount = useCounter(10, 1200, counters.visible);
-  const skillCount = useCounter(16, 1200, counters.visible);
-  const yearCount = useCounter(2, 800, counters.visible);
 
   const navigate = (p: typeof page) => { setPage(p); setMenuOpen(false); };
 
@@ -161,24 +156,6 @@ export default function App() {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Counters */}
-          <div ref={counters.ref} className={`mt-24 sm:mt-32 w-full max-w-2xl transition-all duration-700 ${counters.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="liquid-glass rounded-2xl py-6 px-4">
-                <p className="text-3xl sm:text-5xl font-bold text-foreground">{projectCount}+</p>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Projects</p>
-              </div>
-              <div className="liquid-glass rounded-2xl py-6 px-4">
-                <p className="text-3xl sm:text-5xl font-bold text-foreground">{skillCount}+</p>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Skills</p>
-              </div>
-              <div className="liquid-glass rounded-2xl py-6 px-4">
-                <p className="text-3xl sm:text-5xl font-bold text-foreground">{yearCount}+</p>
-                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Years</p>
-              </div>
             </div>
           </div>
 
