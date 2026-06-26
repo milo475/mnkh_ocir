@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function useTypewriter(text: string, speed = 80) {
   const [displayed, setDisplayed] = useState("");
@@ -15,15 +15,31 @@ function useTypewriter(text: string, speed = 80) {
   return displayed;
 }
 
+function useInView() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold: 0.15 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return { ref, visible };
+}
+
 export default function App() {
   const [page, setPage] = useState<"home" | "about" | "projects" | "contact">("home");
   const [menuOpen, setMenuOpen] = useState(false);
   const typedText = useTypewriter("Junior Web Developer");
+  const skills = useInView();
+  const featured = useInView();
+  const cta = useInView();
 
   const navigate = (p: typeof page) => { setPage(p); setMenuOpen(false); };
 
   return (
-    <div className="relative min-h-screen overflow-hidden flex flex-col">
+    <div className="relative min-h-screen overflow-x-hidden flex flex-col">
       {/* Video Background */}
       <video
         autoPlay
@@ -78,7 +94,7 @@ export default function App() {
 
       {/* Hero Section */}
       {page === "home" && (
-        <section key="home" className="animate-page-in relative z-10 flex flex-col items-center text-center px-4 sm:px-6 pt-24 sm:pt-32 pb-20 sm:pb-40">
+        <section key="home" className="animate-page-in relative z-10 flex flex-col items-center text-center px-4 sm:px-6 pt-24 sm:pt-32 pb-10">
           <h1
             className="animate-fade-rise text-4xl sm:text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-[-1px] sm:tracking-[-2.46px] max-w-7xl font-normal"
             style={{ fontFamily: "'Instrument Serif', serif" }}
@@ -98,6 +114,42 @@ export default function App() {
           <button onClick={() => setPage("projects")} className="animate-fade-rise-delay-2 liquid-glass rounded-full px-8 sm:px-14 py-4 sm:py-5 text-sm sm:text-base text-foreground mt-8 sm:mt-12 hover:scale-[1.03] transition-transform cursor-pointer">
             View My Work
           </button>
+
+          {/* Skills */}
+          <div ref={skills.ref} className={`mt-24 sm:mt-32 w-full max-w-3xl transition-all duration-700 ${skills.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+            <h3 className="text-2xl sm:text-3xl text-foreground font-normal" style={{ fontFamily: "'Instrument Serif', serif" }}>Skills</h3>
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              {["HTML", "CSS", "JavaScript", "React", "Python", "Django", "MySQL", "Supabase", "GitHub", "Linux"].map((s) => (
+                <span key={s} className="liquid-glass rounded-full px-5 py-2 text-sm text-foreground">{s}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Featured Project */}
+          <div ref={featured.ref} className={`mt-24 sm:mt-32 w-full max-w-2xl transition-all duration-700 delay-100 ${featured.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+            <h3 className="text-2xl sm:text-3xl text-foreground font-normal" style={{ fontFamily: "'Instrument Serif', serif" }}>Featured Project</h3>
+            <div className="liquid-glass rounded-3xl px-5 sm:px-8 py-6 sm:py-8 mt-6 text-left">
+              <h4 className="text-xl text-foreground font-medium">Online Quiz System</h4>
+              <p className="text-muted-foreground text-sm mt-2">Онлайн шалгалтын систем — quiz өгч, оноогоо харах боломжтой веб апп.</p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                {["HTML", "CSS", "JavaScript", "Supabase"].map((t) => (
+                  <span key={t} className="liquid-glass rounded-full px-3 py-1 text-xs text-foreground">{t}</span>
+                ))}
+              </div>
+              <a href="https://ocir-quiz-system.vercel.app" target="_blank" rel="noopener noreferrer" className="inline-block mt-4 text-sm text-blue-300 hover:text-blue-200 transition-colors">
+                Live Demo →
+              </a>
+            </div>
+          </div>
+
+          {/* Contact CTA */}
+          <div ref={cta.ref} className={`mt-24 sm:mt-32 mb-10 transition-all duration-700 delay-200 ${cta.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+            <h3 className="text-2xl sm:text-3xl text-foreground font-normal" style={{ fontFamily: "'Instrument Serif', serif" }}>Хамтдаа ажиллах уу?</h3>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">Надтай холбоо барих бол доорх товч дээр дарна уу</p>
+            <button onClick={() => setPage("contact")} className="liquid-glass rounded-full px-8 sm:px-12 py-3 sm:py-4 text-sm sm:text-base text-foreground mt-6 hover:scale-[1.03] transition-transform cursor-pointer">
+              Contact Me
+            </button>
+          </div>
         </section>
       )}
 
