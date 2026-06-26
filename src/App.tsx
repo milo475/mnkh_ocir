@@ -28,6 +28,23 @@ function useInView() {
   return { ref, visible };
 }
 
+function useCounter(end: number, duration = 1500, start = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let frame: number;
+    const startTime = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      setCount(Math.floor(progress * end));
+      if (progress < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [start, end, duration]);
+  return count;
+}
+
 export default function App() {
   const [page, setPage] = useState<"home" | "about" | "projects" | "contact">("home");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -35,6 +52,11 @@ export default function App() {
   const skills = useInView();
   const featured = useInView();
   const cta = useInView();
+  const counters = useInView();
+
+  const projectCount = useCounter(10, 1200, counters.visible);
+  const skillCount = useCounter(16, 1200, counters.visible);
+  const yearCount = useCounter(2, 800, counters.visible);
 
   const navigate = (p: typeof page) => { setPage(p); setMenuOpen(false); };
 
@@ -115,13 +137,48 @@ export default function App() {
             View My Work
           </button>
 
-          {/* Skills */}
+          {/* Skills with Progress Bars + Stagger */}
           <div ref={skills.ref} className={`mt-24 sm:mt-32 w-full max-w-3xl transition-all duration-700 ${skills.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
             <h3 className="text-2xl sm:text-3xl text-foreground font-normal" style={{ fontFamily: "'Instrument Serif', serif" }}>Skills</h3>
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              {["HTML", "CSS", "JavaScript", "React", "Python", "Django", "MySQL", "Supabase", "GitHub", "Linux"].map((s) => (
-                <span key={s} className="liquid-glass rounded-full px-5 py-2 text-sm text-foreground">{s}</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-left">
+              {[
+                { name: "HTML", level: 90 },
+                { name: "CSS", level: 85 },
+                { name: "JavaScript", level: 80 },
+                { name: "React", level: 70 },
+                { name: "Python", level: 75 },
+                { name: "Django", level: 65 },
+                { name: "MySQL", level: 70 },
+                { name: "Supabase", level: 60 },
+              ].map((s, i) => (
+                <div key={s.name} className="transition-all duration-500" style={{ transitionDelay: skills.visible ? `${i * 100}ms` : "0ms", opacity: skills.visible ? 1 : 0, transform: skills.visible ? "translateY(0)" : "translateY(20px)" }}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-foreground">{s.name}</span>
+                    <span className="text-muted-foreground">{skills.visible ? s.level : 0}%</span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-blue-400/80 transition-all duration-1000 ease-out" style={{ width: skills.visible ? `${s.level}%` : "0%", transitionDelay: `${i * 100 + 300}ms` }} />
+                  </div>
+                </div>
               ))}
+            </div>
+          </div>
+
+          {/* Counters */}
+          <div ref={counters.ref} className={`mt-24 sm:mt-32 w-full max-w-2xl transition-all duration-700 ${counters.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="liquid-glass rounded-2xl py-6 px-4">
+                <p className="text-3xl sm:text-5xl font-bold text-foreground">{projectCount}+</p>
+                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Projects</p>
+              </div>
+              <div className="liquid-glass rounded-2xl py-6 px-4">
+                <p className="text-3xl sm:text-5xl font-bold text-foreground">{skillCount}+</p>
+                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Skills</p>
+              </div>
+              <div className="liquid-glass rounded-2xl py-6 px-4">
+                <p className="text-3xl sm:text-5xl font-bold text-foreground">{yearCount}+</p>
+                <p className="text-muted-foreground text-xs sm:text-sm mt-2">Years</p>
+              </div>
             </div>
           </div>
 
@@ -309,6 +366,11 @@ export default function App() {
           </div>
         </section>
       )}
+
+      {/* Scroll Down Indicator */}
+      <div className="relative z-10 w-full py-10 sm:py-16 flex justify-center">
+        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGxuNnQwZndscTU1MmE2Z3Z5cGJtNTh4YnIyajlyZWF4MnZ3eXp4NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PF6e8Xq8dVnVX1BGLS/giphy.gif" alt="scroll down" className="w-full max-w-full" />
+      </div>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/10 py-8 px-6 mt-auto">
