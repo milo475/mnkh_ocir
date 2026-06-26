@@ -368,9 +368,11 @@ export default function App() {
       )}
 
       {/* Scroll Down Indicator */}
-      <div className="relative z-10 w-full py-10 sm:py-16 flex justify-center">
-        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGxuNnQwZndscTU1MmE2Z3Z5cGJtNTh4YnIyajlyZWF4MnZ3eXp4NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PF6e8Xq8dVnVX1BGLS/giphy.gif" alt="scroll down" className="w-full max-w-full" />
-      </div>
+      {page === "home" && (
+        <div className="relative z-10 w-full py-10 sm:py-16 flex justify-center">
+          <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbGxuNnQwZndscTU1MmE2Z3Z5cGJtNTh4YnIyajlyZWF4MnZ3eXp4NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/PF6e8Xq8dVnVX1BGLS/giphy.gif" alt="scroll down" className="w-full max-w-full" />
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/10 py-8 px-6 mt-auto">
